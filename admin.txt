@@ -1,0 +1,3 @@
+username: MainAdmin
+email: ruslan102gar@gmail.com
+password: KAI_4411

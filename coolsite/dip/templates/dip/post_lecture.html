@@ -1,0 +1,8 @@
+{% extends 'dip/index.html' %}
+
+{% block content %}
+<!--<h1>{{lecture.title}}</h1>-->
+<div class="iframe_content">
+    <iframe id="iframe_lecture" src="{{lecture.content_lecture.url}}" ></iframe>
+</div>
+{% endblock %}
