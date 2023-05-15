@@ -36,15 +36,15 @@ def show_lecture(request, lecture_slug):
 def show_laboratory(request, laboratory_slug):
     laboratory = get_object_or_404(Lecture, slug=laboratory_slug)
     posts = Lecture.objects.all()
-    form = PostFormAddFunctionAndSection()
-    # if request.method == 'POST':
-    #     form = PostFormAddFunctionAndSection(request.POST)
-    #     if form.is_valid():
-    #         return redirect('home')
-    #     else:
-    #         return redirect('laboratory')
-    # else:
-    #     form = PostFormAddFunctionAndSection()
+    # form = PostFormAddFunctionAndSection()
+    if request.method == 'POST':
+        form = PostFormAddFunctionAndSection(request.POST)
+        if form.is_valid():
+            return redirect('home')
+        else:
+            return redirect('laboratory')
+    else:
+        form = PostFormAddFunctionAndSection()
 
     context = {
         'posts': posts,
@@ -56,8 +56,8 @@ def show_laboratory(request, laboratory_slug):
 
 
 def laboratory_result(request):
-    function = request.GET['function']
-
+    function = request.GET['par_gamma']
+    # return render(request, 'dip/laboratory_result.html')
     return render(request, 'dip/laboratory_result.html', {'result_function': function})
 
 
