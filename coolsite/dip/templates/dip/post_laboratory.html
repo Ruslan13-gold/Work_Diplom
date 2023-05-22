@@ -4,7 +4,7 @@
 <!--<h1>{{lecture.title}}</h1>-->
     <div class="iframe_content">
         <iframe id="iframe_laboratory" src="{{laboratory.content_laboratory.url}}" ></iframe>
-        <form action="{% url 'laboratory_result' %}" method="get">
+        <form action="{% url 'laboratory_result' %}" method="post">
             {% csrf_token %}
             <div class="menu_block_laboratory">
                 <div class="content_in_menu_block_laboratory">

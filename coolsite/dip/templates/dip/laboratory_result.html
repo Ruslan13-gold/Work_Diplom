@@ -1,6 +1,55 @@
 {% extends 'dip/index.html' %}
-
 {% block content %}
-<!--    <p>Text</p>-->
-    <p>{{result_function}}</p>
+
+<table id="result-table">
+  <thead>
+    <tr>
+      <th></th>
+      {% for col in range_m %}
+        <th>{{ col }}</th>
+      {% endfor %}
+    </tr>
+  </thead>
+  <tbody>
+    {% for col in u reversed %}
+    <tr>
+      <td>{{ forloop.counter0 }}</td>
+      {% for row in col reversed %}
+          <td>{{ row }}</td>
+      {% endfor %}
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+
+<script>
+  $(document).ready(function() {
+    $('#result-table').DataTable();
+  });
+</script>
+
+
+<!--    {% if u %}-->
+<!--      <h2>Результаты решения:</h2>-->
+<!--      <table>-->
+<!--        <thead>-->
+<!--          <tr>-->
+<!--            <th></th>-->
+<!--            {% for i in range_n %}-->
+<!--              <th>{{ i }}</th>-->
+<!--            {% endfor %}-->
+<!--          </tr>-->
+<!--        </thead>-->
+<!--        <tbody>-->
+<!--          {% for j in range_m reversed %}-->
+<!--            <tr>-->
+<!--              <td>{{ j }}</td>-->
+<!--              {% for i in range_n reversed %}-->
+<!--                <td>{{ u.i.j }}</td>-->
+<!--              {% endfor %}-->
+<!--            </tr>-->
+<!--          {% endfor %}-->
+<!--        </tbody>-->
+<!--      </table>-->
+<!--    {% endif %}-->
 {% endblock %}

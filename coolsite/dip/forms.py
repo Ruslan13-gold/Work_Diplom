@@ -13,7 +13,6 @@ class PostFormAddFunctionAndSection(forms.Form):
                простейшая валидация на стороне клиента
                '''
                'pattern': '[0-9-.]{1,10}',
-
                'title': 'Ошибка ввода',
                }))
 
