@@ -1,19 +1,10 @@
+import os
+
+from django.conf import settings
 from django.http import HttpResponse, HttpResponseNotFound
 from django.shortcuts import render, get_object_or_404, redirect
 from .forms import *
 from .models import *
-
-# <table id="result-table">
-#
-#   {% for row in u %}
-#     <tr>
-#       {% for col in row %}
-#         <td>{{ col }}</td>
-#       {% endfor %}
-#     </tr>
-#   {% endfor %}
-#
-# </table>
 
 import pandas as pd
 from tabulate import tabulate
@@ -22,9 +13,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
 
-
 menu = ['О сайте', 'Добавить статью', 'Войти']
-
 
 def index(request):
     posts = Lecture.objects.all()
@@ -152,11 +141,27 @@ def laboratory_result(request):
 
             return reversed_matrix
 
-        # u_list = u.tolist()  # Преобразование массива numpy в список
+        # создаем двумерную матрицу в виде списка списков
         u_list = [[round(col, 3) for col in row] for row in u.tolist()]
         reversed_matrix = reverse_diagonal(u_list)
 
+
+        # отрисовка графика
+        fig = plt.figure()
+        ax = fig.add_subplot(111, projection='3d')
+        ax.set_facecolor('white')
+        l = np.linspace(a, b, num=n + 1)
+        t = np.linspace(0, m * delta, num=m + 1)
+        l, t = np.meshgrid(l, t)
+        surf = ax.plot_surface(l, t, u.T, cmap='coolwarm', linewidth=0, antialiased=False)
+        ax.set_xlabel('x', fontsize=14)
+        ax.set_ylabel('t', fontsize=14)
+        ax.set_zlabel('u', fontsize=14)
+        graph_path = os.path.join(settings.MEDIA_ROOT, 'graph.png')
+        plt.savefig(graph_path)
+
         context = {
+            'graph_url': '/media/graph.png',
             'n': n,
             'm': m,
             'u': reversed_matrix,
@@ -165,34 +170,3 @@ def laboratory_result(request):
         }
 
         return render(request, "dip/laboratory_result.html", context)
-
-
-
-
-# def compiler(request):
-#     posts = Lecture.objects.all()
-#
-#     context = {
-#         'posts': posts,
-#     }
-#
-#     return render(request, 'dip/compiler.html', context=context)
-
-# def show_page_parameters_and_inaccuracy(request, laboratory_id):
-#     posts = Lecture.objects.all()
-#     laboratory = get_object_or_404(Lecture, pk=laboratory_id)
-#     if request.method == 'POST':
-#         form = FormParametersAndInaccuracy(request.POST)
-#         if form.is_valid():
-#             return redirect('inaccuracy_and_parameters')
-#         else:
-#             return redirect('laboratory')
-#     else:
-#         form = FormParametersAndInaccuracy()
-#
-#     context = {
-#         'posts': posts,
-#         'form': form,
-#     }
-#
-#     return render(request, 'dip/parameters_and_inaccuracy.html', context=context)

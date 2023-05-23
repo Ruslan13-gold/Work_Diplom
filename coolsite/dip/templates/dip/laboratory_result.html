@@ -22,34 +22,11 @@
   </tbody>
 </table>
 
+<img src="{{ graph_url }}" alt="Graph">
+
 <script>
   $(document).ready(function() {
     $('#result-table').DataTable();
   });
 </script>
-
-
-<!--    {% if u %}-->
-<!--      <h2>Результаты решения:</h2>-->
-<!--      <table>-->
-<!--        <thead>-->
-<!--          <tr>-->
-<!--            <th></th>-->
-<!--            {% for i in range_n %}-->
-<!--              <th>{{ i }}</th>-->
-<!--            {% endfor %}-->
-<!--          </tr>-->
-<!--        </thead>-->
-<!--        <tbody>-->
-<!--          {% for j in range_m reversed %}-->
-<!--            <tr>-->
-<!--              <td>{{ j }}</td>-->
-<!--              {% for i in range_n reversed %}-->
-<!--                <td>{{ u.i.j }}</td>-->
-<!--              {% endfor %}-->
-<!--            </tr>-->
-<!--          {% endfor %}-->
-<!--        </tbody>-->
-<!--      </table>-->
-<!--    {% endif %}-->
 {% endblock %}
