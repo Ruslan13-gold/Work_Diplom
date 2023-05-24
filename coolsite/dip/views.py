@@ -283,7 +283,7 @@ def laboratory_result(request):
 
 
 def download_pdf(request):
-    pdf_file_path = os.path.join(settings.MEDIA_ROOT, 'result.pdf')
+    pdf_file_path = os.path.join(settings.MEDIA_ROOT, 'result.pdf')  # Путь к PDF-файлу
 
     with open(pdf_file_path, 'rb') as file:
         response = HttpResponse(file.read(), content_type='application/pdf')
