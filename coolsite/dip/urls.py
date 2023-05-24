@@ -7,7 +7,7 @@ urlpatterns = [
     path('lecture/<slug:lecture_slug>/', show_lecture, name='lecture'),
     path('laboratory/<slug:laboratory_slug>/', show_laboratory, name='laboratory'),
     path('laboratory/', laboratory_result, name='laboratory_result'),
-
+    path('download-pdf/', download_pdf, name='download_pdf'),
 
 
     # path('laboratory/compiler/', compiler, name='compiler'),
