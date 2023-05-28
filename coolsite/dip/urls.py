@@ -8,7 +8,8 @@ urlpatterns = [
     path('laboratory/<slug:laboratory_slug>/', show_laboratory, name='laboratory'),
     path('parabolic/', laboratory_result_parabolic, name='laboratory_result_parabolic'),
     path('hyperbolic/', laboratory_result_hyperbolic, name='laboratory_result_hyperbolic'),
-    path('download-pdf/', download_pdf, name='download_pdf'),
+    path('download-pdf-parabolic/', download_pdf_parabolic, name='download_pdf_parabolic'),
+    path('download-pdf-hyperbolic/', download_pdf_hyperbolic, name='download_pdf_hyperbolic'),
     # path('compiler/', compiler, name='compiler'),
 
 

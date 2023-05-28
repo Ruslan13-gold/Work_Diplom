@@ -27,7 +27,7 @@
       <span class="parameter-label">N:</span>
       <span class="parameter-value">{{ big_N }}</span>
     </div>
-      <form action="{% url 'download_pdf' %}" method="post">
+      <form action="{% url 'download_pdf_hyperbolic' %}" method="post">
       {% csrf_token %}
       <button type="submit">Скачать PDF</button>
       </form>
@@ -47,7 +47,7 @@
                     </tr>
                 </thead>
                 <tbody>
-                    {% for col in u_yav %}
+                    {% for col in u_hyperbolic %}
                     <tr>
                         <td>{{ forloop.counter0 }}</td>
                         {% for row in col %}
