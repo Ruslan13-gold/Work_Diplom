@@ -156,6 +156,12 @@ iframe{
     text-decoration: underline;
 }
 
+.compiler_content{
+    margin: 10px;
+    width: 1115px;
+    height: 600px;
+}
+
 .method_block{
     padding: 10px 0 10px 0;
 }
@@ -218,3 +224,4 @@ iframe{
 .block_result {
     display: flex;
 }
+

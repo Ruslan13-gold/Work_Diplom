@@ -4,18 +4,11 @@
 <!--<h1>{{lecture.title}}</h1>-->
     <div class="iframe_content">
         <iframe id="iframe_laboratory" src="{{laboratory.content_laboratory.url}}" ></iframe>
-        <form action="{% url 'laboratory_result' %}" method="post">
+        <form action="{% url 'laboratory_result_hyperbolic' %}" method="post">
             {% csrf_token %}
             <div class="menu_block_laboratory">
                 <div class="content_in_menu_block_laboratory">
 
-<!--                    <div class="content_method_in_border">-->
-<!--                        <p>-->
-<!--                            <label for="{{ form.scheme_choice.id_for_label }}" class="custom_label_input">{{ form.scheme_choice.label }}</label>-->
-<!--                            {{ form.scheme_choice }}-->
-<!--                        </p>-->
-<!--                        <div>{{ form.scheme_choice.errors }}</div>-->
-<!--                    </div>-->
 
                     <h3>Параметры метода</h3>
                     <div class="content_method_in_border">
@@ -42,17 +35,8 @@
                         <div>{{form.par_big_N.errors}}</div>
                     </div>
 
-                    <div class="content_method_in_border">
-                        <p><label for="{{ form.par_S.id_for_label }}" class="custom_label_input">{{form.par_S.label}}</label>{{form.par_S}}</p>
-                        <div>{{form.par_S.errors}}</div>
-
-                        <p><label for="{{ form.par_delta.id_for_label }}" class="custom_label_input">{{form.par_delta.label}}</label>{{form.par_delta}}</p>
-                        <div>{{form.par_delta.errors}}</div>
-                    </div>
-
-
                     <div class="content_in_menu_block_laboratory_button_next">
-                        <a href="{% url 'laboratory_result' %}"><button  class="button_click_program">Рассчитать</button></a>
+                        <a href="{% url 'laboratory_result_hyperbolic' %}"><button  class="button_click_program">Рассчитать</button></a>
                     </div>
 
                 </div>
@@ -61,5 +45,3 @@
     </div>
 
 {% endblock %}
-
-

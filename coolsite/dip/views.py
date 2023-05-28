@@ -1,8 +1,7 @@
 import os
 import tempfile
-from django.http import FileResponse
-from django.conf import settings
-
+from django.http import FileResponse, Http404
+import math
 from django.conf import settings
 from django.http import HttpResponse, HttpResponseNotFound
 from django.shortcuts import render, get_object_or_404, redirect
@@ -12,10 +11,8 @@ import plotly.graph_objects as go
 from math import cos, exp, sin
 import numpy as np
 import io
-from reportlab.lib.pagesizes import letter
 from reportlab.pdfgen import canvas
 from reportlab.platypus import Table, TableStyle
-from reportlab.lib import colors
 import matplotlib.pyplot as plt
 from django.shortcuts import render
 
@@ -28,10 +25,6 @@ def index(request):
 
 def about(request):
     return render(request, 'dip/about.html', {'menu': menu, 'title': 'About'})
-
-
-def pageNotFound(request, exception):
-    return HttpResponseNotFound('<h1>Страница не найдена</h1>')
 
 
 def show_lecture(request, lecture_slug):
@@ -48,34 +41,71 @@ def show_lecture(request, lecture_slug):
 
 
 def show_laboratory(request, laboratory_slug):
+    url = request.path
+    url_parts = url.split('/')
+    desired_part = url_parts[-2] + '/' + url_parts[-1]
     laboratory = get_object_or_404(Lecture, slug=laboratory_slug)
     posts = Lecture.objects.all()
-    if request.method == 'POST':
-        form = PostFormAddFunctionAndSection(request.POST)
-        if form.is_valid():
-            return redirect('home')
+
+    if desired_part == "parabolic-lekciya/":
+        if request.method == 'POST':
+            form = PostFormParabolic(request.POST)
+            if form.is_valid():
+                return redirect('home')
         else:
-            return redirect('laboratory')
+            form = PostFormParabolic()
+
+        context = {
+            'posts': posts,
+            'laboratory': laboratory,
+            'form': form,
+        }
+        return render(request, "dip/post_laboratory_parabolic.html", context)
+
+    elif desired_part == "hyperbolic-lekciya/":
+        if request.method == 'POST':
+            form = PostFormHyperbolic(request.POST)
+            if form.is_valid():
+                return redirect('home')
+        else:
+            form = PostFormHyperbolic()
+
+        context = {
+            'posts': posts,
+            'laboratory': laboratory,
+            'form': form,
+        }
+        return render(request, "dip/post_laboratory_hyperbolic.html", context)
+
     else:
-        form = PostFormAddFunctionAndSection()
-
-    context = {
-        'posts': posts,
-        'laboratory': laboratory,
-        'form': form,
-    }
-
-    return render(request, 'dip/post_laboratory.html', context=context)
+        raise Http404("Страница не найдена")
 
 
-def laboratory_result(request):
+def reverse_diagonal(matrix):
+    n = len(matrix)
+    m = len(matrix[0])
+
+    # Создаем новую матрицу с размерами m x n
+    reversed_matrix = [[0] * n for _ in range(m)]
+
+    # Переворачиваем значения вдоль диагонали
+    for i in range(n):
+        for j in range(m):
+            reversed_matrix[j][i] = matrix[i][j]
+
+    return reversed_matrix
+
+
+def laboratory_result_parabolic(request):
     if request.method == 'POST':
         n = 10
         m = 10
         a = 0
         b = 1
+
         u_yav = np.zeros((n + 1, m + 1))
         u_neyav = np.zeros((n + 1, m + 1))
+
         gamma = float(request.POST.get('par_gamma'))
         small_m = float(request.POST.get('par_m'))
         alpha = float(request.POST.get('par_alpha'))
@@ -133,20 +163,6 @@ def laboratory_result(request):
 
         yav()
         neyav()
-
-        def reverse_diagonal(matrix):
-            n = len(matrix)
-            m = len(matrix[0])
-
-            # Создаем новую матрицу с размерами m x n
-            reversed_matrix = [[0] * n for _ in range(m)]
-
-            # Переворачиваем значения вдоль диагонали
-            for i in range(n):
-                for j in range(m):
-                    reversed_matrix[j][i] = matrix[i][j]
-
-            return reversed_matrix
 
         # создаем двумерные матрицы в виде списков списков
         u_yav_list = [[round(col, 3) for col in row] for row in u_yav.tolist()]
@@ -279,7 +295,127 @@ def laboratory_result(request):
             'delta': delta
         }
 
-        return render(request, "dip/laboratory_result.html", context)
+        return render(request, "dip/laboratory_result_parabolic.html", context)
+
+    else:
+        raise Http404("Страница не найдена")
+
+
+def laboratory_result_hyperbolic(request):
+    if request.method == 'POST':
+        x0 = 0
+        x1 = 1
+        n = 10
+        m = 11
+        h = (x1 - x0) / n
+        k = h
+
+        U = np.zeros((n + 1, m))
+        U_1 = [0.0] * n
+        gamma = float(request.POST.get('par_gamma'))
+        small_m = float(request.POST.get('par_m'))
+        alpha = float(request.POST.get('par_alpha'))
+        betta = float(request.POST.get('par_betta'))
+        big_M = float(request.POST.get('par_big_M'))
+        big_N = float(request.POST.get('par_big_N'))
+
+        def f(x):
+            return gamma * math.cos(small_m * x)
+
+        def F(x):
+            return alpha + betta * math.sin(small_m * x)
+
+        def fi(t):
+            return alpha * t + betta * math.exp(t)
+
+        def psi(t):
+            return big_N * t + big_M * math.sin(small_m * t)
+
+        def hyperbolic_decision():
+            for i in range(n + 1):
+                U[i][0] = f(x0 + i * h)
+
+            for j in range(m):
+                U[0][j] = fi(j * k)
+                U[n][j] = psi(j * k)
+
+            for i in range(1, n):
+                U_1[i] = U[i][0] - k * F(x0 + i * h)
+                U[i][1] = U[i + 1][0] + U[i - 1][0] - U_1[i]
+
+            for j in range(1, m - 1):
+                for i in range(1, n):
+                    U[i][j + 1] = U[i + 1][j] + U[i - 1][j] - U[i][j - 1]
+
+        hyperbolic_decision()
+        results = [[round(col, 3) for col in row] for row in U.tolist()]
+        reversed_matrix_results = reverse_diagonal(results)
+
+        x = np.linspace(x0, x1, n + 1)
+        t = np.linspace(0, k * (m - 1), m)
+        x = np.round(x, 2)
+        t = np.round(t, 2)
+
+        # Создание трехмерной поверхности
+        fig = go.Figure(data=[go.Surface(z=U.T, colorscale='Viridis')])
+
+        # Настройка осей и меток
+        fig.update_layout(
+            scene=dict(
+                xaxis=dict(
+                    title='x',
+                    tickvals=np.arange(len(x)),
+                    ticktext=x,
+                    title_font=dict(size=18)
+                ),
+                yaxis=dict(
+                    title='t',
+                    tickvals=np.arange(len(t)),
+                    ticktext=t,
+                    title_font=dict(size=18)
+                ),
+                zaxis=dict(
+                    title='u',
+                    title_font=dict(size=18)
+                ),
+                aspectratio=dict(x=0.9, y=0.9, z=0.9)
+            ),
+            autosize=False,
+            width=765,
+            height=550,
+            margin=dict(
+                l=0, r=10, b=0, t=10
+            )
+        )
+
+        graph_fig = fig.to_html(full_html=False, default_height=550, default_width=765)
+
+        context = {
+            'graph_fig': graph_fig,
+            'u_yav': reversed_matrix_results,
+            'range_m': range(m),
+            'gamma': gamma,
+            'small_m': small_m,
+            'alpha': alpha,
+            'betta': betta,
+            'big_M': big_M,
+            'big_N': big_N,
+        }
+        return render(request, 'dip/laboratory_result_hyperbolic.html', context)
+
+    else:
+        # Обработка GET-запроса
+        return HttpResponse("Invalid request method")
+
+
+# def compiler(request):
+#     posts = Lecture.objects.all()
+#
+#     context = {
+#         'posts': posts,
+#     }
+#
+#     return render(request, 'dip/compiler.html', context=context)
 
 
 def download_pdf(request):
