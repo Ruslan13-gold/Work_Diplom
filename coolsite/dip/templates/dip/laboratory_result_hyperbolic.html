@@ -1,0 +1,77 @@
+{% extends 'dip/index.html' %}
+{% block content %}
+<div>
+  <div class="parameters">
+    <span class="parameters_heading">Результат решения при начальных параметрах: </span>
+    <div class="parameter-item">
+      <span class="parameter-label">&#947;:</span>
+      <span class="parameter-value">{{ gamma }}</span>
+    </div>
+    <div class="parameter-item">
+      <span class="parameter-label">m:</span>
+      <span class="parameter-value">{{ small_m }}</span>
+    </div>
+    <div class="parameter-item">
+      <span class="parameter-label">&#945;:</span>
+      <span class="parameter-value">{{ alpha }}</span>
+    </div>
+    <div class="parameter-item">
+      <span class="parameter-label">&#946;:</span>
+      <span class="parameter-value">{{ betta }}</span>
+    </div>
+    <div class="parameter-item">
+      <span class="parameter-label">M:</span>
+      <span class="parameter-value">{{ big_M }}</span>
+    </div>
+    <div class="parameter-item">
+      <span class="parameter-label">N:</span>
+      <span class="parameter-value">{{ big_N }}</span>
+    </div>
+      <form action="{% url 'download_pdf_hyperbolic' %}" method="post">
+      {% csrf_token %}
+      <button type="submit">Скачать PDF</button>
+      </form>
+  </div>
+
+  <div class="method_block">
+    <span class="parameters_heading_method">Решение ДУЧП гиперболического типа: </span>
+    <div class="block_result">
+        <div class="left-div">
+            <table id="result-table-yav">
+                <thead>
+                    <tr>
+                        <th></th>
+                        {% for col in range_m %}
+                        <th>{{ col }}</th>
+                        {% endfor %}
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for col in u_hyperbolic %}
+                    <tr>
+                        <td>{{ forloop.counter0 }}</td>
+                        {% for row in col %}
+                        <td>{{ row }}</td>
+                        {% endfor %}
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        <div class="right-div">
+        <div>
+          {{ graph_fig | safe }}
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  $(document).ready(function() {
+    $('#result-table-yav').DataTable({
+      "pageLength": 25
+    });
+  });
+</script>
+{% endblock %}
