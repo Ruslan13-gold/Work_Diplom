@@ -21,7 +21,7 @@ import os
 import tempfile
 from django.http import HttpResponse
 from django.shortcuts import render
-from reportlab.lib.pagesizes import A4
+from reportlab.lib.pagesizes import A4, letter
 from reportlab.lib.styles import getSampleStyleSheet
 from reportlab.lib.units import inch
 from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer
@@ -106,6 +106,18 @@ def reverse_diagonal(matrix):
             reversed_matrix[j][i] = matrix[i][j]
 
     return reversed_matrix
+
+
+def draw_for_pdf(l_draw, t_draw, u_draw):
+    fig = plt.figure()
+    ax = fig.add_subplot(111, projection='3d')
+    ax.set_facecolor('white')
+    l_draw, t_draw = np.meshgrid(l_draw, t_draw)
+    surf = ax.plot_surface(l_draw, t_draw, u_draw.T, cmap='coolwarm', linewidth=0, antialiased=False)
+    ax.set_xlabel('x', fontsize=14)
+    ax.set_ylabel('t', fontsize=14)
+    ax.set_zlabel('u', fontsize=14)
+    return fig
 
 
 def laboratory_result_parabolic(request):
@@ -249,25 +261,24 @@ def laboratory_result_parabolic(request):
         graph_div_yav = fig_yav.to_html(full_html=False, default_height=550, default_width=765)
         graph_div_neyav = fig_neyav.to_html(full_html=False, default_height=550, default_width=765)
 
-        fig = plt.figure()
-        ax = fig.add_subplot(111, projection='3d')
-        ax.set_facecolor('white')
-        l, t = np.meshgrid(l, t)
-        surf = ax.plot_surface(l, t, u_yav.T, cmap='coolwarm', linewidth=0, antialiased=False)
-        ax.set_xlabel('x', fontsize=14)
-        ax.set_ylabel('t', fontsize=14)
-        ax.set_zlabel('u', fontsize=14)
-
-        # Сохранение графика во временном файле
-        with tempfile.NamedTemporaryFile(delete=False, suffix='.png') as tmpfile:
-            plt.savefig(tmpfile.name, format='png')
-
-        # Создание PDF-документа
         buffer = io.BytesIO()
-        pdf = canvas.Canvas(buffer)
+        pdf = canvas.Canvas(buffer, pagesize=letter)
 
-        # Добавление графика в PDF-документ
-        pdf.drawInlineImage(tmpfile.name, 30, 400, width=500, height=350)
+        # Добавление первого графика в PDF-документ
+        graph_yav = draw_for_pdf(l, t, u_yav)
+        graph_yav_filename = "graph_yav.png"
+        graph_yav_path = os.path.join(settings.MEDIA_ROOT, graph_yav_filename)
+        graph_yav.savefig(graph_yav_path, format='png')
+
+        pdf.drawInlineImage(graph_yav_path, 30, 400, width=500, height=350)
+
+        # Добавление второго графика в PDF-документ
+        graph_neyav = draw_for_pdf(l, t, u_neyav)
+        graph_neyav_filename = "graph_neyav.png"
+        graph_neyav_path = os.path.join(settings.MEDIA_ROOT, graph_neyav_filename)
+        graph_neyav.savefig(graph_neyav_path, format='png')
+
+        pdf.drawInlineImage(graph_neyav_path, 30, 30, width=500, height=350)
 
         # Добавление таблицы в PDF-документ
         table_data = [['x', 't', 'u_yav']]
@@ -279,36 +290,44 @@ def laboratory_result_parabolic(request):
             # Стили таблицы...
         ]))
         table.wrapOn(pdf, 500, 300)
-        table.drawOn(pdf, 30, 30)
+        table.drawOn(pdf, 30, 750)
 
         # Завершение создания PDF-документа
         pdf.showPage()
         pdf.save()
 
-        # Закрытие временного файла
-        tmpfile.close()
+        # Удаление временных файлов с графиками
+        graph_yav.clf()
+        graph_neyav.clf()
+        os.remove(graph_yav_path)
+        os.remove(graph_neyav_path)
 
+        # Получение данных PDF-файла из буфера
+        pdf_buffer = buffer.getvalue()
+        buffer.close()
+
+        # Сохранение PDF-файла
         pdf_file_path = os.path.join(settings.MEDIA_ROOT, 'result.pdf')
         with open(pdf_file_path, 'wb') as file:
-            file.write(buffer.getvalue())
+            file.write(pdf_buffer)
 
         context = {
-            'pdf_data': pdf_file_path,
-            'graph_yav': graph_div_yav,
-            'graph_neyav': graph_div_neyav,
-            'u_yav': reversed_matrix_yav,
-            'u_neyav': reversed_matrix_neyav,
-            'range_n': list(range(n + 1)),
-            'range_m': list(range(m + 1)),
-            'gamma': gamma,
-            'small_m': small_m,
-            'alpha': alpha,
-            'betta': betta,
-            'big_M': big_M,
-            'big_N': big_N,
-            'big_S': big_S,
-            'delta': delta
-        }
+                'pdf_data': pdf_file_path,
+                'graph_yav': graph_div_yav,
+                'graph_neyav': graph_div_neyav,
+                'u_yav': reversed_matrix_yav,
+                'u_neyav': reversed_matrix_neyav,
+                'range_n': list(range(n + 1)),
+                'range_m': list(range(m + 1)),
+                'gamma': gamma,
+                'small_m': small_m,
+                'alpha': alpha,
+                'betta': betta,
+                'big_M': big_M,
+                'big_N': big_N,
+                'big_S': big_S,
+                'delta': delta
+            }
 
         return render(request, "dip/laboratory_result_parabolic.html", context)
 
