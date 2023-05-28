@@ -15,8 +15,20 @@ from reportlab.pdfgen import canvas
 from reportlab.platypus import Table, TableStyle
 import matplotlib.pyplot as plt
 from django.shortcuts import render
+import asyncio
+import io
+import os
+import tempfile
+from django.http import HttpResponse
+from django.shortcuts import render
+from reportlab.lib.pagesizes import A4
+from reportlab.lib.styles import getSampleStyleSheet
+from reportlab.lib.units import inch
+from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer
+
 
 menu = ['О сайте', 'Добавить статью', 'Войти']
+
 
 def index(request):
     posts = Lecture.objects.all()
@@ -237,11 +249,14 @@ def laboratory_result_parabolic(request):
         graph_div_yav = fig_yav.to_html(full_html=False, default_height=550, default_width=765)
         graph_div_neyav = fig_neyav.to_html(full_html=False, default_height=550, default_width=765)
 
-        plt.plot(l, t, u_yav.T)
-        plt.xlabel('x')
-        plt.ylabel('t')
-        plt.title('График результата вычислений')
-        plt.grid(True)
+        fig = plt.figure()
+        ax = fig.add_subplot(111, projection='3d')
+        ax.set_facecolor('white')
+        l, t = np.meshgrid(l, t)
+        surf = ax.plot_surface(l, t, u_yav.T, cmap='coolwarm', linewidth=0, antialiased=False)
+        ax.set_xlabel('x', fontsize=14)
+        ax.set_ylabel('t', fontsize=14)
+        ax.set_zlabel('u', fontsize=14)
 
         # Сохранение графика во временном файле
         with tempfile.NamedTemporaryFile(delete=False, suffix='.png') as tmpfile:
@@ -408,6 +423,16 @@ def laboratory_result_hyperbolic(request):
         return HttpResponse("Invalid request method")
 
 
+def download_pdf(request):
+    pdf_file_path = os.path.join(settings.MEDIA_ROOT, 'result.pdf')  # Путь к PDF-файлу
+
+    with open(pdf_file_path, 'rb') as file:
+        response = HttpResponse(file.read(), content_type='application/pdf')
+        response['Content-Disposition'] = 'attachment; filename="result.pdf"'
+
+    return response
+
+
 # def compiler(request):
 #     posts = Lecture.objects.all()
 #
@@ -418,11 +443,3 @@ def laboratory_result_hyperbolic(request):
 #     return render(request, 'dip/compiler.html', context=context)
 
 
-def download_pdf(request):
-    pdf_file_path = os.path.join(settings.MEDIA_ROOT, 'result.pdf')  # Путь к PDF-файлу
-
-    with open(pdf_file_path, 'rb') as file:
-        response = HttpResponse(file.read(), content_type='application/pdf')
-        response['Content-Disposition'] = 'attachment; filename="result.pdf"'
-
-    return response
