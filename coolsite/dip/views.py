@@ -430,9 +430,5 @@ def download_pdf_hyperbolic(request):
 
 def compiler(request):
     posts = Lecture.objects.all()
-
-    context = {
-        'menu': menu, 'posts': posts,
-    }
-
+    context = {'menu': menu, 'posts': posts,}
     return render(request, 'dip/compiler.html', context=context)
