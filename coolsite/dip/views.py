@@ -20,7 +20,9 @@ from reportlab.pdfbase import pdfmetrics
 from reportlab.pdfbase.ttfonts import TTFont
 
 
-menu = ['О сайте', 'Добавить статью', 'Войти']
+menu = [{'title': "Компилятор на Python", 'url_name': 'compiler'},
+        {'title': "Войти как админ", 'url_name': 'admin'}
+]
 
 
 def index(request):
@@ -28,14 +30,10 @@ def index(request):
     return render(request, 'dip/index.html', {'posts': posts, 'menu': menu, 'title': 'Главная страница'})
 
 
-def about(request):
-    return render(request, 'dip/about.html', {'menu': menu, 'title': 'About'})
-
-
 def show_lecture(request, lecture_slug):
     lecture = get_object_or_404(Lecture, slug=lecture_slug)
     posts = Lecture.objects.all()
-    context = {'posts': posts, 'lecture': lecture, 'title': lecture.title}
+    context = {'posts': posts, 'lecture': lecture, 'title': lecture.title, 'menu': menu}
     return render(request, 'dip/post_lecture.html', context=context)
 
 
@@ -53,7 +51,7 @@ def show_laboratory(request, laboratory_slug):
         else:
             form = PostFormParabolic()
 
-        context = {'posts': posts, 'laboratory': laboratory, 'form': form}
+        context = {'menu': menu, 'posts': posts, 'laboratory': laboratory, 'form': form}
         return render(request, "dip/post_laboratory_parabolic.html", context)
 
     elif desired_part == "hyperbolic-lekciya/":
@@ -63,7 +61,7 @@ def show_laboratory(request, laboratory_slug):
                 return redirect('home')
         else: form = PostFormHyperbolic()
 
-        context = {'posts': posts, 'laboratory': laboratory, 'form': form}
+        context = {'menu': menu, 'posts': posts, 'laboratory': laboratory, 'form': form}
         return render(request, "dip/post_laboratory_hyperbolic.html", context)
 
     else: raise Http404("Страница не найдена")
@@ -179,7 +177,7 @@ def laboratory_result_parabolic(request):
         pdf.drawString(30, 730,
                        f'Начальные параметры для явной схемы решения ДУЧП параболического типа:')
         pdf.drawString(30, 710,
-                       f'γ: {gamma},     m: {small_m},     α: {alpha},     β: {betta},     M: {big_M},     N: {big_N},     δ: {delta}')
+                       f'γ: {gamma},       m: {small_m},       α: {alpha},       β: {betta},       M: {big_M},       N: {big_N},       δ: {delta}')
 
         # Добавление первого графика в PDF-документ
         graph_yav = draw_for_pdf(l, t, u_yav)
@@ -224,7 +222,7 @@ def laboratory_result_parabolic(request):
         pdf.drawString(30, 730,
                        f'Начальные параметры для неявной схемы решения ДУЧП параболического типа:')
         pdf.drawString(30, 710,
-                       f'γ: {gamma},     m: {small_m},     α: {alpha},     β: {betta},     M: {big_M},     N: {big_N},     S: {big_S}')
+                       f'γ: {gamma},       m: {small_m},       α: {alpha},       β: {betta},       M: {big_M},       N: {big_N},       S: {big_S}')
 
         # Добавление второго графика в PDF-документ
         graph_neyav = draw_for_pdf(l, t, u_neyav)
@@ -279,7 +277,7 @@ def laboratory_result_parabolic(request):
         with open(pdf_file_path, 'wb') as file: file.write(pdf_buffer)
 
         context = {
-                'graph_yav': graph_div_yav, 'graph_neyav': graph_div_neyav,
+                'menu': menu, 'graph_yav': graph_div_yav, 'graph_neyav': graph_div_neyav,
                 'u_yav': reversed_matrix_yav, 'u_neyav': reversed_matrix_neyav,
                 'range_n': list(range(n + 1)), 'range_m': list(range(m + 1)),
                 'gamma': gamma, 'small_m': small_m, 'alpha': alpha, 'betta': betta, 'big_M': big_M, 'big_N': big_N, 'big_S': big_S, 'delta': delta
@@ -350,7 +348,7 @@ def laboratory_result_hyperbolic(request):
         pdf.drawString(30, 730,
                        f'Начальные параметры для решения ДУЧП гиперболического типа:')
         pdf.drawString(30, 710,
-                       f'γ: {gamma},     m: {small_m},     α: {alpha},     β: {betta},     M: {big_M},     N: {big_N}')
+                       f'γ: {gamma},       m: {small_m},       α: {alpha},       β: {betta},       M: {big_M},       N: {big_N}')
 
         # Добавление второго графика в PDF-документ
         graph_hyperbolic = draw_for_pdf(x, t, U)
@@ -405,7 +403,7 @@ def laboratory_result_hyperbolic(request):
         with open(pdf_file_path, 'wb') as file: file.write(pdf_buffer)
 
         context = {
-            'graph_fig': graph_fig, 'u_hyperbolic': reversed_matrix_results, 'range_m': range(m),
+            'menu': menu, 'graph_fig': graph_fig, 'u_hyperbolic': reversed_matrix_results, 'range_m': range(m),
             'gamma': gamma, 'small_m': small_m, 'alpha': alpha, 'betta': betta, 'big_M': big_M, 'big_N': big_N}
         return render(request, 'dip/laboratory_result_hyperbolic.html', context)
 
@@ -415,11 +413,12 @@ def laboratory_result_hyperbolic(request):
 
 
 def download_pdf_parabolic(request):
-    pdf_file_path = os.path.join(settings.MEDIA_ROOT, 'result.pdf')  # Путь к PDF-файлу
+    pdf_file_path = os.path.join(settings.MEDIA_ROOT, 'result_parabolic.pdf')  # Путь к PDF-файлу
     with open(pdf_file_path, 'rb') as file:
         response = HttpResponse(file.read(), content_type='application/pdf')
         response['Content-Disposition'] = 'attachment; filename="result.pdf"'
     return response
+
 
 def download_pdf_hyperbolic(request):
     pdf_file_path = os.path.join(settings.MEDIA_ROOT, 'result_hyperbolic.pdf')  # Путь к PDF-файлу
@@ -428,11 +427,12 @@ def download_pdf_hyperbolic(request):
         response['Content-Disposition'] = 'attachment; filename="result_hyperbolic.pdf"'
     return response
 
-# def compiler(request):
-#     posts = Lecture.objects.all()
-#
-#     context = {
-#         'posts': posts,
-#     }
-#
-#     return render(request, 'dip/compiler.html', context=context)
+
+def compiler(request):
+    posts = Lecture.objects.all()
+
+    context = {
+        'menu': menu, 'posts': posts,
+    }
+
+    return render(request, 'dip/compiler.html', context=context)

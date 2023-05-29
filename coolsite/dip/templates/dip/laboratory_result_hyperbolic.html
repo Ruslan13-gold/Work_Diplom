@@ -1,8 +1,9 @@
 {% extends 'dip/index.html' %}
 {% block content %}
 <div>
-  <div class="parameters">
+  <div class="parameters_laboratory">
     <span class="parameters_heading">Результат решения при начальных параметрах: </span>
+
     <div class="parameter-item">
       <span class="parameter-label">&#947;:</span>
       <span class="parameter-value">{{ gamma }}</span>
@@ -27,10 +28,14 @@
       <span class="parameter-label">N:</span>
       <span class="parameter-value">{{ big_N }}</span>
     </div>
+
+
+    <div class="block_laboratory_button_result">
       <form action="{% url 'download_pdf_hyperbolic' %}" method="post">
       {% csrf_token %}
-      <button type="submit">Скачать PDF</button>
+      <button class="button_click_program" type="submit">Скачать Результат</button>
       </form>
+    </div>
   </div>
 
   <div class="method_block">

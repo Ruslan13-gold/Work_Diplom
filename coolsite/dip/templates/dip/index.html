@@ -3,6 +3,18 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit&display=swap" rel="stylesheet">
+
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Russo+One&display=swap" rel="stylesheet">
+
+
     <link type="text/css" href="{% static 'dip/css/styles.css' %}" rel="stylesheet">
     <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.24/css/jquery.dataTables.min.css">
 
@@ -14,25 +26,41 @@
     <!--    скрипт для отображения графика-->
     <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
 
-<div class="right_post_lecture">
-    <div class="group_lecture_button">
-        {% block post %}
-        {% for p in posts %}
-        <button class="collapsible">{{p}}</button>
+    {% block mainmenu %}
+		<div class="header">
+			<ul id="mainmenu" class="mainmenu">
+                <li class="logo"><a href="{% url 'home' %}">РЕШЕНИЕ ДУЧП</a></li>
+{% for m in menu %}
+	{% if not forloop.last %}
+			<li><a href="{% url m.url_name %}">{{m.title}}</a></li>
+	{% else %}
+			<li class="last"><a href="{% url 'admin:index' %}">{{m.title}}</a></li>
+	{% endif %}
+{% endfor %}
+			</ul>
+			<div class="clear"></div>
+		</div>
+{% endblock mainmenu %}
 
-        <div class="content">
-            <p><a href="{{ p.get_absolute_url_lecture }}" class="a_in_content">{{p}}</a></p>
-            <hr>
-            <p><a href="{{ p.get_absolute_url_laboratory }}" class="a_in_content">Выполнить лабораторную работу</a></p>
+    <div class="right_post_lecture">
+        <div class="group_lecture_button">
+            {% block post %}
+            {% for p in posts %}
+            <button class="collapsible">{{p}}</button>
+
+            <div class="content">
+                <p><a href="{{ p.get_absolute_url_lecture }}" class="a_in_content">{{p}}</a></p>
+                <hr>
+                <p><a href="{{ p.get_absolute_url_laboratory }}" class="a_in_content">Выполнить лабораторную работу</a></p>
+            </div>
+
+            {% endfor %}
+            {% endblock %}
         </div>
 
-        {% endfor %}
-        {% endblock %}
+    {% block content %}
+    {% endblock %}
     </div>
-
-{% block content %}
-{% endblock %}
-</div>
 
 <script src="{% static 'dip/js/screepts.js' %}"></script>
 </body>
