@@ -20,9 +20,7 @@ from reportlab.pdfbase import pdfmetrics
 from reportlab.pdfbase.ttfonts import TTFont
 
 
-menu = [{'title': "Компилятор на Python", 'url_name': 'compiler'},
-        {'title': "Войти как админ", 'url_name': 'admin'}
-]
+menu = [{'title': "Компилятор Python", 'url_name': 'compiler'}, {'title': "Войти как админ", 'url_name': 'admin'}]
 
 
 def index(request):
@@ -51,7 +49,7 @@ def show_laboratory(request, laboratory_slug):
         else:
             form = PostFormParabolic()
 
-        context = {'menu': menu, 'posts': posts, 'laboratory': laboratory, 'form': form}
+        context = {'menu': menu, 'posts': posts, 'laboratory': laboratory,'title': laboratory.title, 'form': form}
         return render(request, "dip/post_laboratory_parabolic.html", context)
 
     elif desired_part == "hyperbolic-lekciya/":
@@ -61,7 +59,7 @@ def show_laboratory(request, laboratory_slug):
                 return redirect('home')
         else: form = PostFormHyperbolic()
 
-        context = {'menu': menu, 'posts': posts, 'laboratory': laboratory, 'form': form}
+        context = {'menu': menu, 'posts': posts, 'laboratory': laboratory,'title': laboratory.title, 'form': form}
         return render(request, "dip/post_laboratory_hyperbolic.html", context)
 
     else: raise Http404("Страница не найдена")
@@ -157,7 +155,7 @@ def laboratory_result_parabolic(request):
                 yaxis=dict(title='t', tickvals=np.arange(len(t)), ticktext=t, title_font=dict(size=18)),
                 zaxis=dict(title='u', title_font=dict(size=18)),
                 aspectratio=dict(x=0.9, y=0.9, z=0.9)),
-            autosize=False, width=765, height=550, margin=dict(l=0, r=10, b=0, t=10))
+            autosize=False, width=740, height=530, margin=dict(l=0, r=10, b=0, t=10))
 
         fig_neyav.update_layout(
             scene=dict(
@@ -165,10 +163,10 @@ def laboratory_result_parabolic(request):
                 yaxis=dict(title='t', tickvals=np.arange(len(t)), ticktext=t, title_font=dict(size=18)),
                 zaxis=dict(title='u', title_font=dict(size=18)),
                 aspectratio=dict(x=0.9, y=0.9, z=0.9)),
-            autosize=False, width=765, height=550, margin=dict(l=0, r=10, b=0, t=10))
+            autosize=False, width=740, height=530, margin=dict(l=0, r=10, b=0, t=10))
 
-        graph_div_yav = fig_yav.to_html(full_html=False, default_height=550, default_width=765)
-        graph_div_neyav = fig_neyav.to_html(full_html=False, default_height=550, default_width=765)
+        graph_div_yav = fig_yav.to_html(full_html=False, default_height=530, default_width=740)
+        graph_div_neyav = fig_neyav.to_html(full_html=False, default_height=530, default_width=740)
 
         # создание pdf-файла
         buffer = io.BytesIO(); pdf = canvas.Canvas(buffer, pagesize=letter)
@@ -280,7 +278,8 @@ def laboratory_result_parabolic(request):
                 'menu': menu, 'graph_yav': graph_div_yav, 'graph_neyav': graph_div_neyav,
                 'u_yav': reversed_matrix_yav, 'u_neyav': reversed_matrix_neyav,
                 'range_n': list(range(n + 1)), 'range_m': list(range(m + 1)),
-                'gamma': gamma, 'small_m': small_m, 'alpha': alpha, 'betta': betta, 'big_M': big_M, 'big_N': big_N, 'big_S': big_S, 'delta': delta
+                'gamma': gamma, 'small_m': small_m, 'alpha': alpha, 'betta': betta, 'big_M': big_M, 'big_N': big_N, 'big_S': big_S,
+                'delta': delta, 'title': 'Результат вычисления ДУЧП параболического типа'
             }
         return render(request, "dip/laboratory_result_parabolic.html", context)
 
@@ -335,9 +334,9 @@ def laboratory_result_hyperbolic(request):
                 xaxis=dict(title='x', tickvals=np.arange(len(x)), ticktext=x, title_font=dict(size=18)),
                 yaxis=dict(title='t', tickvals=np.arange(len(t)), ticktext=t, title_font=dict(size=18)),
                 zaxis=dict(title='u', title_font=dict(size=18)), aspectratio=dict(x=0.9, y=0.9, z=0.9)),
-            autosize=False, width=765, height=550, margin=dict(l=0, r=10, b=0, t=10))
+            autosize=False, width=740, height=530, margin=dict(l=0, r=10, b=0, t=10))
 
-        graph_fig = fig.to_html(full_html=False, default_height=550, default_width=765)
+        graph_fig = fig.to_html(full_html=False, default_height=530, default_width=740)
 
         # создание pdf-файла
         buffer = io.BytesIO()
@@ -357,7 +356,6 @@ def laboratory_result_hyperbolic(request):
         graph_hyperbolic.savefig(graph_hyperbolic_path, format='png')
         pdf.drawInlineImage(graph_hyperbolic_path, 60, 305, width=500, height=400)
 
-        # Добавление таблицы в PDF-документ
         # Добавление таблицы в PDF-документ
         table_data = [['implicit']]  # Добавляем пустую ячейку для номеров строк
         for i, row in enumerate(reversed_matrix_results):
@@ -404,7 +402,8 @@ def laboratory_result_hyperbolic(request):
 
         context = {
             'menu': menu, 'graph_fig': graph_fig, 'u_hyperbolic': reversed_matrix_results, 'range_m': range(m),
-            'gamma': gamma, 'small_m': small_m, 'alpha': alpha, 'betta': betta, 'big_M': big_M, 'big_N': big_N}
+            'gamma': gamma, 'small_m': small_m, 'alpha': alpha, 'betta': betta, 'big_M': big_M, 'big_N': big_N,
+            'title': 'Результат вычисления ДУЧП гиперболического типа'}
         return render(request, 'dip/laboratory_result_hyperbolic.html', context)
 
     else:
@@ -430,5 +429,5 @@ def download_pdf_hyperbolic(request):
 
 def compiler(request):
     posts = Lecture.objects.all()
-    context = {'menu': menu, 'posts': posts,}
+    context = {'menu': menu, 'posts': posts, 'title': 'Компилятор Python'}
     return render(request, 'dip/compiler.html', context=context)

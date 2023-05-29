@@ -4,29 +4,28 @@
 <head>
     <meta charset="UTF-8">
 
+    <title>{{ title }}</title>
 
+    <!--    ttf для текста-->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Outfit&display=swap" rel="stylesheet">
 
-
+    <!--    ttf для заголовка-->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Russo+One&display=swap" rel="stylesheet">
-
-
+    <!--    для интерактивной таблицы-->
     <link type="text/css" href="{% static 'dip/css/styles.css' %}" rel="stylesheet">
     <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.24/css/jquery.dataTables.min.css">
 
-    <title>{{ title }}</title>
-</head>
-<body>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.datatables.net/1.10.24/js/jquery.dataTables.min.js"></script>
     <!--    скрипт для отображения графика-->
     <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
 
-
+</head>
+<body>
     {% block mainmenu %}
 		<div class="header">
 			<ul id="mainmenu" class="mainmenu">
@@ -43,19 +42,16 @@
 		</div>
 {% endblock mainmenu %}
 
-
     <div class="right_post_lecture">
         <div class="group_lecture_button">
             {% block post %}
             {% for p in posts %}
             <button class="collapsible">{{p}}</button>
-
             <div class="content">
                 <p><a href="{{ p.get_absolute_url_lecture }}" class="a_in_content">{{p}}</a></p>
                 <hr>
                 <p><a href="{{ p.get_absolute_url_laboratory }}" class="a_in_content">Выполнить лабораторную работу</a></p>
             </div>
-
             {% endfor %}
             {% endblock %}
         </div>
@@ -69,10 +65,12 @@
             рост популяций, финансовые рынки и т.д. Решение ДУЧП позволяет получить информацию о распределении температуры, давления,
             плотности и других физических параметров в пространстве и времени, что может быть важно для понимания различных явлений
             и разработки будущих технических решений.</p>
+
             <p>Данный класс задач описывает сложные математические модели,
             аналитическое решение которых может являться слишком трудоемким или быть практически невыполнимым.
             Существующие приближенные (численные) методы для решения ДУЧП позволяют получить
             приближенное решение практически любой задачи с заданной точностью.</p>
+
             <p>Один из самых распространенных методов для решения уравнений параболического типа - метод конечных разностей.
                 Этот метод заключается в замене производных их конечно-разностным представлением и дальнейшим решением
                 итерационными схемами. Метод конечных разностей также применяется для решения уравнения теплопроводности,
@@ -101,9 +99,6 @@
         </div>
     {% endblock %}
     </div>
-
 <script src="{% static 'dip/js/screepts.js' %}"></script>
 </body>
 </html>
-
-

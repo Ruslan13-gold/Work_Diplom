@@ -1,7 +1,5 @@
 {% extends 'dip/index.html' %}
-
 {% block content %}
-<!--<h1>{{lecture.title}}</h1>-->
     <div class="iframe_content">
         <iframe id="iframe_laboratory" src="{{laboratory.content_laboratory.url}}" ></iframe>
         <form action="{% url 'laboratory_result_parabolic' %}" method="post">
@@ -9,12 +7,10 @@
             <div class="menu_block_laboratory">
                 <div class="content_in_menu_block_laboratory">
 
-
                     <h3>Параметры метода</h3>
                     <div class="content_method_in_border">
                         <p><label for="{{ form.par_gamma.id_for_label }}" class="custom_label_input">{{form.par_gamma.label}}</label>{{form.par_gamma}}</p>
                         <div>{{form.par_gamma.errors}}</div>
-
                         <p><label for="{{ form.par_m.id_for_label }}" class="custom_label_input">{{form.par_m.label}}</label>{{form.par_m}}</p>
                         <div>{{form.par_m.errors}}</div>
                     </div>
@@ -22,7 +18,6 @@
                     <div class="content_method_in_border">
                         <p><label for="{{ form.par_alpha.id_for_label }}" class="custom_label_input">{{form.par_alpha.label}}</label>{{form.par_alpha}}</p>
                         <div>{{form.par_alpha.errors}}</div>
-
                         <p><label for="{{ form.par_betta.id_for_label }}" class="custom_label_input">{{form.par_betta.label}}</label>{{form.par_betta}}</p>
                         <div>{{form.par_betta.errors}}</div>
                     </div>
@@ -30,7 +25,6 @@
                     <div class="content_method_in_border">
                         <p><label for="{{ form.par_big_M.id_for_label }}" class="custom_label_input">{{form.par_big_M.label}}</label>{{form.par_big_M}}</p>
                         <div>{{form.par_big_M.errors}}</div>
-
                         <p><label for="{{ form.par_big_N.id_for_label }}" class="custom_label_input">{{form.par_big_N.label}}</label>{{form.par_big_N}}</p>
                         <div>{{form.par_big_N.errors}}</div>
                     </div>
@@ -38,11 +32,9 @@
                     <div class="content_method_in_border">
                         <p><label for="{{ form.par_S.id_for_label }}" class="custom_label_input">{{form.par_S.label}}</label>{{form.par_S}}</p>
                         <div>{{form.par_S.errors}}</div>
-
                         <p><label for="{{ form.par_delta.id_for_label }}" class="custom_label_input">{{form.par_delta.label}}</label>{{form.par_delta}}</p>
                         <div>{{form.par_delta.errors}}</div>
                     </div>
-
 
                     <div class="content_in_menu_block_laboratory_button_next">
                         <a href="{% url 'laboratory_result_parabolic' %}"><button  class="button_click_program">Рассчитать</button></a>
@@ -52,7 +44,4 @@
             </div>
         </form>
     </div>
-
 {% endblock %}
-
-

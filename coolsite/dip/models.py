@@ -11,16 +11,10 @@ class Lecture(models.Model):
     time_update = models.DateTimeField(auto_now=True, verbose_name="Время обновления")
     is_published = models.BooleanField(default=True, verbose_name="Опубликован\\Неопубликован")
 
-    def __str__(self):
-        return self.title
+    def __str__(self): return self.title
 
-    def get_absolute_url_lecture(self):
-        return reverse('lecture', kwargs={'lecture_slug': self.slug})
+    def get_absolute_url_lecture(self): return reverse('lecture', kwargs={'lecture_slug': self.slug})
 
-    def get_absolute_url_laboratory(self):
-        return reverse('laboratory', kwargs={'laboratory_slug': self.slug})
+    def get_absolute_url_laboratory(self): return reverse('laboratory', kwargs={'laboratory_slug': self.slug})
 
-    class Meta:
-        verbose_name = "Лекции"
-        verbose_name_plural = "Лекции"
-        ordering = ['time_create', 'title']
+    class Meta: verbose_name = "Лекции"; verbose_name_plural = "Лекции"; ordering = ['time_create', 'title']
