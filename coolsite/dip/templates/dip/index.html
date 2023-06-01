@@ -3,7 +3,6 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-
     <title>{{ title }}</title>
 
     <!--    ttf для текста-->
@@ -15,8 +14,9 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Russo+One&display=swap" rel="stylesheet">
-    <!--    для интерактивной таблицы-->
+
     <link type="text/css" href="{% static 'dip/css/styles.css' %}" rel="stylesheet">
+    <!--    для интерактивной таблицы-->
     <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.24/css/jquery.dataTables.min.css">
 
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
@@ -48,7 +48,7 @@
             {% for p in posts %}
             <button class="collapsible">{{p}}</button>
             <div class="content">
-                <p><a href="{{ p.get_absolute_url_lecture }}" class="a_in_content">{{p}}</a></p>
+                <p><a href="{{ p.get_absolute_url_lecture }}" class="a_in_content">Теоретический материал по теме "{{p}}"</a></p>
                 <hr>
                 <p><a href="{{ p.get_absolute_url_laboratory }}" class="a_in_content">Выполнить лабораторную работу</a></p>
             </div>

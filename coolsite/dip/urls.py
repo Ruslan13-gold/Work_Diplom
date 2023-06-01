@@ -13,4 +13,5 @@ urlpatterns = [
     path('download-pdf-hyperbolic/', download_pdf_hyperbolic, name='download_pdf_hyperbolic'),
     path('compiler/', compiler, name='compiler'),
     path('grappelli/', admin.site.urls, name='admin'),
+    path('error', page_404, name='page_404')
 ]

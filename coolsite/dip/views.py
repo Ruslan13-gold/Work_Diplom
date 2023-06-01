@@ -27,6 +27,9 @@ def index(request):
     posts = Lecture.objects.all()
     return render(request, 'dip/index.html', {'posts': posts, 'menu': menu, 'title': 'Главная страница'})
 
+def page_404(request):
+    return render(request, 'dip/page404.html', {'title': 'Error 404'})
+
 
 def show_lecture(request, lecture_slug):
     lecture = get_object_or_404(Lecture, slug=lecture_slug)
@@ -62,7 +65,7 @@ def show_laboratory(request, laboratory_slug):
         context = {'menu': menu, 'posts': posts, 'laboratory': laboratory,'title': laboratory.title, 'form': form}
         return render(request, "dip/post_laboratory_hyperbolic.html", context)
 
-    else: raise Http404("Страница не найдена")
+    else: return redirect('page_404')
 
 
 def reverse_diagonal(matrix):
@@ -155,7 +158,7 @@ def laboratory_result_parabolic(request):
                 yaxis=dict(title='t', tickvals=np.arange(len(t)), ticktext=t, title_font=dict(size=18)),
                 zaxis=dict(title='u', title_font=dict(size=18)),
                 aspectratio=dict(x=0.9, y=0.9, z=0.9)),
-            autosize=False, width=740, height=530, margin=dict(l=0, r=10, b=0, t=10))
+            autosize=False, width=760, height=540, margin=dict(l=0, r=10, b=0, t=10))
 
         fig_neyav.update_layout(
             scene=dict(
@@ -163,10 +166,10 @@ def laboratory_result_parabolic(request):
                 yaxis=dict(title='t', tickvals=np.arange(len(t)), ticktext=t, title_font=dict(size=18)),
                 zaxis=dict(title='u', title_font=dict(size=18)),
                 aspectratio=dict(x=0.9, y=0.9, z=0.9)),
-            autosize=False, width=740, height=530, margin=dict(l=0, r=10, b=0, t=10))
+            autosize=False, width=760, height=540, margin=dict(l=0, r=10, b=0, t=10))
 
-        graph_div_yav = fig_yav.to_html(full_html=False, default_height=530, default_width=740)
-        graph_div_neyav = fig_neyav.to_html(full_html=False, default_height=530, default_width=740)
+        graph_div_yav = fig_yav.to_html(full_html=False, default_height=540, default_width=760)
+        graph_div_neyav = fig_neyav.to_html(full_html=False, default_height=540, default_width=760)
 
         # создание pdf-файла
         buffer = io.BytesIO(); pdf = canvas.Canvas(buffer, pagesize=letter)
@@ -175,7 +178,7 @@ def laboratory_result_parabolic(request):
         pdf.drawString(30, 730,
                        f'Начальные параметры для явной схемы решения ДУЧП параболического типа:')
         pdf.drawString(30, 710,
-                       f'γ: {gamma},       m: {small_m},       α: {alpha},       β: {betta},       M: {big_M},       N: {big_N},       δ: {delta}')
+                       f'γ = {gamma},       m = {small_m},       α = {alpha},       β = {betta},       M  {big_M},       N = {big_N},       δ = {delta}')
 
         # Добавление первого графика в PDF-документ
         graph_yav = draw_for_pdf(l, t, u_yav)
@@ -220,7 +223,7 @@ def laboratory_result_parabolic(request):
         pdf.drawString(30, 730,
                        f'Начальные параметры для неявной схемы решения ДУЧП параболического типа:')
         pdf.drawString(30, 710,
-                       f'γ: {gamma},       m: {small_m},       α: {alpha},       β: {betta},       M: {big_M},       N: {big_N},       S: {big_S}')
+                       f'γ = {gamma},       m = {small_m},       α = {alpha},       β = {betta},       M = {big_M},       N = {big_N},       S = {big_S}')
 
         # Добавление второго графика в PDF-документ
         graph_neyav = draw_for_pdf(l, t, u_neyav)
@@ -284,7 +287,7 @@ def laboratory_result_parabolic(request):
         return render(request, "dip/laboratory_result_parabolic.html", context)
 
     else:
-        raise Http404("Страница не найдена")
+        return redirect('page_404')
 
 
 def laboratory_result_hyperbolic(request):
@@ -334,9 +337,9 @@ def laboratory_result_hyperbolic(request):
                 xaxis=dict(title='x', tickvals=np.arange(len(x)), ticktext=x, title_font=dict(size=18)),
                 yaxis=dict(title='t', tickvals=np.arange(len(t)), ticktext=t, title_font=dict(size=18)),
                 zaxis=dict(title='u', title_font=dict(size=18)), aspectratio=dict(x=0.9, y=0.9, z=0.9)),
-            autosize=False, width=740, height=530, margin=dict(l=0, r=10, b=0, t=10))
+            autosize=False, width=760, height=540, margin=dict(l=0, r=10, b=0, t=10))
 
-        graph_fig = fig.to_html(full_html=False, default_height=530, default_width=740)
+        graph_fig = fig.to_html(full_html=False, default_height=540, default_width=770)
 
         # создание pdf-файла
         buffer = io.BytesIO()
@@ -347,7 +350,7 @@ def laboratory_result_hyperbolic(request):
         pdf.drawString(30, 730,
                        f'Начальные параметры для решения ДУЧП гиперболического типа:')
         pdf.drawString(30, 710,
-                       f'γ: {gamma},       m: {small_m},       α: {alpha},       β: {betta},       M: {big_M},       N: {big_N}')
+                       f'γ = {gamma},       m = {small_m},       α = {alpha},       β = {betta},       M = {big_M},       N = {big_N}')
 
         # Добавление второго графика в PDF-документ
         graph_hyperbolic = draw_for_pdf(x, t, U)
@@ -406,16 +409,14 @@ def laboratory_result_hyperbolic(request):
             'title': 'Результат вычисления ДУЧП гиперболического типа'}
         return render(request, 'dip/laboratory_result_hyperbolic.html', context)
 
-    else:
-        # Обработка GET-запроса
-        return HttpResponse("Invalid request method")
+    else: return redirect('page_404')
 
 
 def download_pdf_parabolic(request):
     pdf_file_path = os.path.join(settings.MEDIA_ROOT, 'result_parabolic.pdf')  # Путь к PDF-файлу
     with open(pdf_file_path, 'rb') as file:
         response = HttpResponse(file.read(), content_type='application/pdf')
-        response['Content-Disposition'] = 'attachment; filename="result.pdf"'
+        response['Content-Disposition'] = 'attachment; filename="result_parabolic.pdf"'
     return response
 
 
